@@ -28,8 +28,7 @@ def create_link(db: Session, link: schemas.LinkCreate):
     if existing_link:
         return existing_link
 
-    last_link = db.query(models.Link).order_by(models.Link.id.desc()).limit(1).scalar()
-    next_id = (last_link.id + 1) if last_link else 1
+    next_id = get_next_id(db)
     short_code = generate_short_code(next_id)
     db_link = models.Link(original_url=link.original_url, short_code=short_code)
     db.add(db_link)
@@ -40,3 +39,9 @@ def create_link(db: Session, link: schemas.LinkCreate):
 
 def get_link_by_short_code(db: Session, short_code: str):
     return db.query(models.Link).filter(models.Link.short_code == short_code).first()
+
+
+def get_next_id(db: Session) -> int:
+    """Récupère le prochain ID disponible."""
+    last_id = db.query(models.Link.id).order_by(models.Link.id.desc()).limit(1).scalar()
+    return (last_id + 1) if last_id else 1
