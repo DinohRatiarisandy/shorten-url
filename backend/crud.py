@@ -17,7 +17,17 @@ def generate_short_code(next_id: int) -> str:
     return hashids.encode(next_id)
 
 
+def get_existing_link_by_url(db: Session, url: str) -> models.Link | None:
+    """Retourne le lien existant pour une URL, ou None si introuvable."""
+    return db.query(models.Link).filter(models.Link.original_url == url).first()
+
+
 def create_link(db: Session, link: schemas.LinkCreate):
+    existing_link = get_existing_link_by_url(db, link.original_url)
+
+    if existing_link:
+        return existing_link
+
     last_link = db.query(models.Link).order_by(models.Link.id.desc()).limit(1).scalar()
     next_id = (last_link.id + 1) if last_link else 1
     short_code = generate_short_code(next_id)
