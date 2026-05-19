@@ -1,6 +1,8 @@
 import os
+from urllib.parse import urlparse
 
 import dotenv
+from fastapi import HTTPException
 from hashids import Hashids
 from sqlalchemy.orm import Session
 
@@ -10,6 +12,15 @@ import schemas
 dotenv.load_dotenv(".env", override=True)
 hashids_salt_key = os.getenv("HASHID_SALT_SECRET")
 hashids = Hashids(salt=hashids_salt_key or "dinoh-liantsoa-ratiarisandy", min_length=6)
+
+
+def is_valid_url(url: str) -> bool:
+    """Vérifie si une URL est valide (format de base)."""
+    try:
+        result = urlparse(url)
+        return all([result.scheme in ["http", "https"], result.netloc])
+    except Exception:
+        return False
 
 
 def generate_short_code(next_id: int) -> str:
@@ -23,6 +34,11 @@ def get_existing_link_by_url(db: Session, url: str) -> models.Link | None:
 
 
 def create_link(db: Session, link: schemas.LinkCreate):
+    if not is_valid_url(link.original_url):
+        raise HTTPException(
+            status_code=400, detail="Invalid URL. Must start with http:// or https://"
+        )
+
     existing_link = get_existing_link_by_url(db, link.original_url)
 
     if existing_link:
