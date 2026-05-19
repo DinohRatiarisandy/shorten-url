@@ -11,7 +11,7 @@ import schemas
 
 dotenv.load_dotenv(".env", override=True)
 hashids_salt_key = os.getenv("HASHID_SALT_SECRET")
-hashids = Hashids(salt=hashids_salt_key or "dinoh-liantsoa-ratiarisandy", min_length=6)
+hashids = Hashids(salt=hashids_salt_key or "dinoh-liantsoa-ratiarisandy", min_length=5)
 
 
 def is_valid_url(url: str) -> bool:
