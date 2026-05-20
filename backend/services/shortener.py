@@ -1,35 +1,32 @@
 import os
+import random
+import string
 
 import dotenv
 
+import models
+
 dotenv.load_dotenv(override=True)
 
-ALPHABET = os.getenv(
-    "BASE62_ALPHABET", "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-)
-
-SECRET = int(os.getenv("SHORTENER_SECRET", 987654321))
-
-MIN_LENGTH = 5
+ALPHABET = os.getenv("BASE62_ALPHABET", string.ascii_letters + string.digits)
+CODE_LENGTH = 5
 
 
-def encode_base62(num):
-    if num == 0:
-        return ALPHABET[0]
-
-    result = ""
-
-    while num > 0:
-        num, remainder = divmod(num, 62)
-
-        result = ALPHABET[remainder] + result
-
-    return result
+def generate_code(length=CODE_LENGTH):
+    return "".join(random.choices(ALPHABET, k=length))
 
 
-def generate_short_code(id):
-    mixed = id ^ SECRET
+def generate_unique_code(db):
+    tries = 0
+    while True:
+        if tries >= 3:
+            code = generate_code(6)
+        else:
+            code = generate_code()
 
-    code = encode_base62(mixed)
+        exists = db.query(models.Link).filter_by(short_code=code).first()
 
-    return code.rjust(MIN_LENGTH, ALPHABET[0])
+        if not exists:
+            return code
+
+        tries += 1

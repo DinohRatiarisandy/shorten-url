@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 import models
 import schemas
-from services.shortener import generate_short_code
+from services.shortener import generate_unique_code
 from services.validators import is_valid_url
 
 
@@ -17,17 +17,15 @@ def create_link(db: Session, link: schemas.LinkCreate):
     if not is_valid_url(link.original_url):
         raise HTTPException(status_code=400, detail="Invalid URL")
 
-    existing_link = get_existing_link_by_url(db, link.original_url)
+    existing = get_existing_link_by_url(db, link.original_url)
+    if existing:
+        return existing
 
-    if existing_link:
-        return existing_link
+    code = generate_unique_code(db)
 
-    db_link = models.Link(original_url=link.original_url, short_code="TEMP")
+    db_link = models.Link(original_url=link.original_url, short_code=code)
 
     db.add(db_link)
-    db.flush()
-    db_link.short_code = generate_short_code(db_link.id)
-    db.flush()
     db.commit()
     db.refresh(db_link)
 
