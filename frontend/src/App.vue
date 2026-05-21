@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import QrCode from "./components/QrCode.vue";
+import { HalfCircleSpinner } from "epic-spinners";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -68,13 +69,30 @@ function copyToClipboard() {
 				:disabled="loading || !url"
 				class="w-full bg-blue-500 text-white py-2 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50"
 			>
-				<span v-if="loading">⏳ Génération...</span>
-				<span v-else>Créer un lien</span>
+				<!-- Loading state -->
+				<span v-if="loading" class="flex items-center gap-2">
+					<half-circle-spinner
+						:animation-duration="1000"
+						:size="18"
+						color="#ffffff"
+					/>
+					<span>Generating...</span>
+				</span>
+
+				<!-- Default state -->
+				<span v-else>Create a link</span>
 			</button>
+			<p
+				v-if="loading"
+				class="text-xs text-gray-600 mt-2 text-center animate-pulse"
+			>
+				⏳ Be patient 😄 I'm using free hosting, so my backend may take
+				a few seconds to wake up...
+			</p>
 
 			<!-- Result -->
 			<div v-if="shortUrl" class="mt-6">
-				<p class="mb-2 font-medium">Lien généré :</p>
+				<p class="mb-2 font-medium">Link generated :</p>
 
 				<div class="flex items-center gap-2 bg-gray-100 p-3 rounded-lg">
 					<a
