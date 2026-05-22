@@ -165,7 +165,7 @@ function copyToClipboard() {
 				</p>
 			</form>
 			<!-- Result -->
-			<div v-if="shortUrl" class="mt-6">
+			<div v-if="shortUrl && !loading" class="mt-6">
 				<p class="mb-2 font-medium">Link generated :</p>
 
 				<div class="flex items-center gap-2 bg-gray-100 p-3 rounded-lg">
