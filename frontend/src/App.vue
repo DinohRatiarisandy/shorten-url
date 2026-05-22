@@ -4,6 +4,7 @@ import QrCode from "./components/QrCode.vue";
 import { HalfCircleSpinner } from "epic-spinners";
 
 const API_URL = import.meta.env.VITE_API_URL;
+const API_HOSTNAME = new URL(API_URL).hostname;
 
 const url = ref("");
 const shortUrl = ref("");
@@ -11,6 +12,14 @@ const loading = ref(false);
 const copied = ref(false);
 const errorMessage = ref("");
 const lastSubmittedUrl = ref("");
+
+function getHostname(url: string) {
+	try {
+		return new URL(url).hostname;
+	} catch {
+		return null;
+	}
+}
 
 function validationUrl(url: string) {
 	return url.startsWith("http://") || url.startsWith("https://");
@@ -28,6 +37,13 @@ function onInputChange() {
 
 async function createShortLink() {
 	errorMessage.value = "";
+	const inputHost = getHostname(url.value);
+
+	if (inputHost === API_HOSTNAME) {
+		errorMessage.value =
+			"You can't shorten a link that's already shortened. 😅";
+		return;
+	}
 
 	if (loading.value) return;
 
