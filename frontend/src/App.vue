@@ -9,13 +9,34 @@ const url = ref("");
 const shortUrl = ref("");
 const loading = ref(false);
 const copied = ref(false);
+const errorMessage = ref("");
+
+function validationUrl(url: string) {
+	return url.startsWith("http://") || url.startsWith("https://");
+}
 
 async function createShortLink() {
-	if (!url.value) return;
+	errorMessage.value = "";
+
+	if (!url.value) {
+		errorMessage.value = "Please enter a valid URL";
+		return;
+	}
+
+	if (!validationUrl(url.value)) {
+		errorMessage.value =
+			"Invalid URL (must start with http:// or https://)";
+		return;
+	}
 
 	try {
 		loading.value = true;
 		copied.value = false;
+
+		if (!url.value || !url.value.startsWith("http")) {
+			alert("URL invalide (doit commencer par http)");
+			return;
+		}
 
 		const response = await fetch(`${API_URL}/links/`, {
 			method: "POST",
@@ -56,12 +77,21 @@ function copyToClipboard() {
 			<h1 class="text-2xl font-bold mb-6 text-center">Shorten URL 🚀</h1>
 
 			<!-- Input -->
-			<input
-				v-model="url"
-				type="text"
-				placeholder="Entrer une URL (https://...)"
-				class="border p-3 w-full rounded-lg mb-4 outline-none focus:ring-2 focus:ring-blue-400"
-			/>
+			<section>
+				<input
+					v-model="url"
+					@input="errorMessage = ''"
+					type="text"
+					placeholder="Entrer une URL (https://...)"
+					class="border p-3 w-full rounded-lg mb-4 outline-none focus:ring-2 focus:ring-blue-400"
+				/>
+				<p
+					v-if="errorMessage"
+					class="text-red-500 text-sm animate-pulse mb-2"
+				>
+					⚠️ {{ errorMessage }}
+				</p>
+			</section>
 
 			<!-- Button -->
 			<button
