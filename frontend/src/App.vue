@@ -15,6 +15,11 @@ function validationUrl(url: string) {
 	return url.startsWith("http://") || url.startsWith("https://");
 }
 
+function clearInput() {
+	errorMessage.value = "";
+	url.value = "";
+}
+
 async function createShortLink() {
 	errorMessage.value = "";
 
@@ -33,11 +38,6 @@ async function createShortLink() {
 		loading.value = true;
 		copied.value = false;
 
-		if (!url.value || !url.value.startsWith("http")) {
-			alert("URL invalide (doit commencer par http)");
-			return;
-		}
-
 		const response = await fetch(`${API_URL}/links/`, {
 			method: "POST",
 			headers: {
@@ -50,14 +50,18 @@ async function createShortLink() {
 
 		const data = await response.json();
 
+		if (!response.ok) {
+			errorMessage.value = data.detail || "Server error";
+			return;
+		}
+
 		shortUrl.value = `${API_URL}/${data.short_code}`;
 	} catch (error) {
-		console.log(error);
+		errorMessage.value = "Network error";
 	} finally {
 		loading.value = false;
 	}
 }
-
 function copyToClipboard() {
 	if (!shortUrl.value) return;
 
@@ -75,51 +79,61 @@ function copyToClipboard() {
 		<div class="w-105 p-6 shadow-xl rounded-2xl bg-white">
 			<!-- Title -->
 			<h1 class="text-2xl font-bold mb-6 text-center">Shorten URL 🚀</h1>
-
-			<!-- Input -->
-			<section>
-				<input
-					v-model="url"
-					@input="errorMessage = ''"
-					type="text"
-					placeholder="Entrer une URL (https://...)"
-					class="border p-3 w-full rounded-lg mb-4 outline-none focus:ring-2 focus:ring-blue-400"
-				/>
+			<form @submit.prevent="createShortLink">
+				<!-- Input -->
+				<div class="relative">
+					<input
+						v-model="url"
+						@input="errorMessage = ''"
+						type="text"
+						placeholder="Entrer une URL (https://...)"
+						class="border p-3 w-full rounded-lg mb-4 outline-none focus:ring-2 focus:ring-blue-400"
+					/>
+					<!-- Clear button -->
+					<button
+						v-if="url"
+						type="button"
+						@click="clearInput"
+						class="absolute right-1 top-3.75 -translate-y-1/2 text-gray-400 hover:text-red-500"
+						title="Clear"
+					>
+						✖
+					</button>
+				</div>
 				<p
 					v-if="errorMessage"
 					class="text-red-500 text-sm animate-pulse mb-2"
 				>
 					⚠️ {{ errorMessage }}
 				</p>
-			</section>
 
-			<!-- Button -->
-			<button
-				@click="createShortLink"
-				:disabled="loading || !url"
-				class="w-full bg-blue-500 text-white py-2 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50"
-			>
-				<!-- Loading state -->
-				<span v-if="loading" class="flex items-center gap-2">
-					<half-circle-spinner
-						:animation-duration="1000"
-						:size="18"
-						color="#ffffff"
-					/>
-					<span>Generating...</span>
-				</span>
+				<!-- Button -->
+				<button
+					type="submit"
+					:disabled="loading || !url"
+					class="w-full bg-blue-500 text-white py-2 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50"
+				>
+					<!-- Loading state -->
+					<span v-if="loading" class="flex items-center gap-2">
+						<half-circle-spinner
+							:animation-duration="1000"
+							:size="18"
+							color="#ffffff"
+						/>
+						<span>Generating...</span>
+					</span>
 
-				<!-- Default state -->
-				<span v-else>Create a link</span>
-			</button>
-			<p
-				v-if="loading"
-				class="text-xs text-gray-600 mt-2 text-center animate-pulse"
-			>
-				⏳ Be patient 😄 I'm using free hosting, so my backend may take
-				a few seconds to wake up...
-			</p>
-
+					<!-- Default state -->
+					<span v-else>Create a link</span>
+				</button>
+				<p
+					v-if="loading"
+					class="text-xs text-gray-600 mt-2 text-center animate-pulse"
+				>
+					⏳ Be patient 😄 I'm using free hosting, so my backend may
+					take a few seconds to wake up...
+				</p>
+			</form>
 			<!-- Result -->
 			<div v-if="shortUrl" class="mt-6">
 				<p class="mb-2 font-medium">Link generated :</p>
