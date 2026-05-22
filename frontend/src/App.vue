@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import QrCode from "./components/QrCode.vue";
-import { HalfCircleSpinner } from "epic-spinners";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const API_HOSTNAME = new URL(API_URL).hostname;
@@ -32,7 +31,7 @@ function clearInput() {
 
 function onInputChange() {
 	errorMessage.value = "";
-	lastsubmittedUrl.value = "";
+	lastSubmittedUrl.value = "";
 }
 
 async function createShortLink() {
@@ -145,11 +144,9 @@ function copyToClipboard() {
 				>
 					<!-- Loading state -->
 					<span v-if="loading" class="flex items-center gap-2">
-						<half-circle-spinner
-							:animation-duration="1000"
-							:size="18"
-							color="#ffffff"
-						/>
+						<span
+							class="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4"
+						></span>
 						<span>Generating...</span>
 					</span>
 
