@@ -10,6 +10,7 @@ const shortUrl = ref("");
 const loading = ref(false);
 const copied = ref(false);
 const errorMessage = ref("");
+const lastSubmittedUrl = ref("");
 
 function validationUrl(url: string) {
 	return url.startsWith("http://") || url.startsWith("https://");
@@ -20,8 +21,19 @@ function clearInput() {
 	url.value = "";
 }
 
+function onInputChange() {
+	errorMessage.value = "";
+	lastsubmittedUrl.value = "";
+}
+
 async function createShortLink() {
 	errorMessage.value = "";
+
+	if (loading.value) return;
+
+	if (url.value === lastSubmittedUrl.value && shortUrl.value) {
+		errorMessage.value = "This URL was already shortened";
+	}
 
 	if (!url.value) {
 		errorMessage.value = "Please enter a valid URL";
@@ -56,12 +68,14 @@ async function createShortLink() {
 		}
 
 		shortUrl.value = `${API_URL}/${data.short_code}`;
+		lastSubmittedUrl.value = url.value;
 	} catch (error) {
 		errorMessage.value = "Network error";
 	} finally {
 		loading.value = false;
 	}
 }
+
 function copyToClipboard() {
 	if (!shortUrl.value) return;
 
@@ -110,7 +124,7 @@ function copyToClipboard() {
 				<!-- Button -->
 				<button
 					type="submit"
-					:disabled="loading || !url"
+					:disabled="loading || !url || lastSubmittedUrl === url"
 					class="w-full bg-blue-500 text-white py-2 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50"
 				>
 					<!-- Loading state -->
