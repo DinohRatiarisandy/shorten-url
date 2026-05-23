@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { API_URL } from "@/services/linkService";
+
+const showCustomCodeInput = ref(false);
 
 const props = defineProps<{
 	modelValue: string; // v-model='url'
@@ -22,6 +25,13 @@ function handleInput(event: Event) {
 	emit("update:modelValue", value);
 	emit("change");
 }
+
+function handleCustomCode(event: Event) {
+	showCustomCodeInput.value = !showCustomCodeInput.value;
+	if (showCustomCodeInput.value === false) {
+		emit("update:customCode", "");
+	}
+}
 </script>
 
 <template>
@@ -35,8 +45,17 @@ function handleInput(event: Event) {
 				placeholder="Entrer une URL (https://...)"
 				class="border p-3 w-full rounded-lg mb-4 outline-none focus:ring-2 focus:ring-blue-400"
 			/>
+			<p
+				@click="handleCustomCode"
+				class="cursor-pointer text-sm text-gray-700 mb-1 font-semibold"
+			>
+				🛠️Customize my URL
+			</p>
 			<!-- Custom Code -->
-			<div class="flex items-center rounded-lg px-3 py-2 mb-4">
+			<div
+				v-if="showCustomCodeInput"
+				class="flex items-center rounded-lg px-3 py-2 mb-4"
+			>
 				<span class="text-gray-400 text-sm whitespace-nowrap"
 					>{{ API_URL }}/</span
 				>
@@ -49,7 +68,7 @@ function handleInput(event: Event) {
 						)
 					"
 					type="text"
-					placeholder="mon-alias"
+					placeholder="custom-alias"
 					class="outline-none text-sm flex-1 min-w-0"
 					id="customCode"
 					maxlength="15"
