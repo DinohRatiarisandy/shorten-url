@@ -16,17 +16,17 @@ def generate_code(length=5):
     return "".join(random.choices(ALPHABET, k=length))
 
 
-def generate_unique_code(db: Session, lenght=5, custom_short_code: str | None = None):
+def generate_unique_code(db: Session, length=5, custom_short_code: str | None = None):
     call_nb = 0
     while True:
         if call_nb > 10:
-            lenght += 1
+            length += 1
             code = (
                 custom_short_code + "-" if custom_short_code else ""
-            ) + generate_code(lenght)
+            ) + generate_code(length)
             call_nb = 0
         else:
-            code = (custom_short_code or "") + generate_code(lenght)
+            code = (custom_short_code or "") + generate_code(length)
             call_nb += 1
 
         exists = db.query(models.Link).filter_by(short_code=code).first()

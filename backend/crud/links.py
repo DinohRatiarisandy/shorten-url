@@ -23,7 +23,7 @@ def create_link(db: Session, link: schemas.LinkCreate):
     # Si un custom code est fourni
     if link.custom_short_code:
         code = generate_unique_code(
-            db, lenght=0, custom_short_code=link.custom_short_code
+            db, length=0, custom_short_code=link.custom_short_code
         )
     else:
         code = generate_unique_code(db)
