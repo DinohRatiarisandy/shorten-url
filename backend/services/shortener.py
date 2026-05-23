@@ -3,30 +3,33 @@ import random
 import string
 
 import dotenv
+from sqlalchemy.orm import Session
 
 import models
 
 dotenv.load_dotenv(override=True)
 
 ALPHABET = os.getenv("BASE62_ALPHABET", string.ascii_letters + string.digits)
-CODE_LENGTH = 5
 
 
-def generate_code(length=CODE_LENGTH):
+def generate_code(length=5):
     return "".join(random.choices(ALPHABET, k=length))
 
 
-def generate_unique_code(db):
-    tries = 0
+def generate_unique_code(db: Session, length=5, custom_short_code: str | None = None):
+    call_nb = 0
     while True:
-        if tries >= 3:
-            code = generate_code(6)
+        if call_nb > 10:
+            length += 1
+            code = (
+                custom_short_code + "-" if custom_short_code else ""
+            ) + generate_code(length)
+            call_nb = 0
         else:
-            code = generate_code()
+            code = (custom_short_code or "") + generate_code(length)
+            call_nb += 1
 
         exists = db.query(models.Link).filter_by(short_code=code).first()
 
         if not exists:
             return code
-
-        tries += 1

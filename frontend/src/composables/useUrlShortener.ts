@@ -9,6 +9,7 @@ export function useUrlShortener() {
 	const loading = ref(false);
 	const errorMessage = ref("");
 	const lastSubmittedUrl = ref("");
+	const customCode = ref("");
 
 	async function submit() {
 		errorMessage.value = "";
@@ -33,7 +34,7 @@ export function useUrlShortener() {
 		try {
 			loading.value = true;
 			errorMessage.value = "";
-			shortUrl.value = await createShortLink(url.value);
+			shortUrl.value = await createShortLink(url.value, customCode.value);
 			lastSubmittedUrl.value = url.value;
 		} catch (error: any) {
 			errorMessage.value = error.message || "Network error.";
@@ -45,10 +46,12 @@ export function useUrlShortener() {
 	function clearInput() {
 		url.value = "";
 		errorMessage.value = "";
+		customCode.value = "";
 	}
 
 	return {
 		url,
+		customCode,
 		shortUrl,
 		loading,
 		errorMessage,
