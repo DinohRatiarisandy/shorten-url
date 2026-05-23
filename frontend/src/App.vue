@@ -8,6 +8,7 @@ import { useUrlShortener } from "./composables/useUrlShortener";
 const copied = ref(false);
 const {
 	url,
+	customCode,
 	shortUrl,
 	loading,
 	errorMessage,
@@ -39,12 +40,14 @@ function onInputChange() {
 			<!-- URL input -->
 			<UrlInput
 				v-model="url"
+				v-model:customCode="customCode"
 				:loading="loading"
 				:error="errorMessage"
 				:disabled="lastSubmittedUrl === url"
 				@submit="submit"
 				@clear="clearInput"
 				@change="onInputChange"
+				@update:customCode="customCode = $event"
 			/>
 
 			<!-- Result -->

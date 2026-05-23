@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { API_URL } from "@/services/linkService";
+
 const props = defineProps<{
 	modelValue: string; // v-model='url'
+	customCode: string;
 	loading: boolean;
 	error: string;
 	disabled: boolean;
@@ -8,6 +11,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
 	"update:modelValue": [value: string];
+	"update:customCode": [value: string];
 	submit: [];
 	clear: [];
 	change: [];
@@ -31,6 +35,26 @@ function handleInput(event: Event) {
 				placeholder="Entrer une URL (https://...)"
 				class="border p-3 w-full rounded-lg mb-4 outline-none focus:ring-2 focus:ring-blue-400"
 			/>
+			<!-- Custom Code -->
+			<div class="flex items-center rounded-lg px-3 py-2 mb-4">
+				<span class="text-gray-400 text-sm whitespace-nowrap"
+					>{{ API_URL }}/</span
+				>
+				<input
+					:value="props.customCode"
+					@input="
+						emit(
+							'update:customCode',
+							($event.target as HTMLInputElement).value,
+						)
+					"
+					type="text"
+					placeholder="mon-alias"
+					class="outline-none text-sm flex-1 min-w-0"
+					id="customCode"
+					maxlength="15"
+				/>
+			</div>
 			<!-- Clear button -->
 			<button
 				v-if="props.modelValue"
