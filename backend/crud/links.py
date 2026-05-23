@@ -13,7 +13,6 @@ def get_existing_link_by_url(db: Session, url: str) -> models.Link | None:
 
 
 def create_link(db: Session, link: schemas.LinkCreate):
-
     if not is_valid_url(link.original_url):
         raise HTTPException(status_code=400, detail="Invalid URL")
 
@@ -21,7 +20,13 @@ def create_link(db: Session, link: schemas.LinkCreate):
     if existing:
         return existing
 
-    code = generate_unique_code(db)
+    # Si un custom code est fourni
+    if link.custom_short_code:
+        code = generate_unique_code(
+            db, lenght=0, custom_short_code=link.custom_short_code
+        )
+    else:
+        code = generate_unique_code(db)
 
     db_link = models.Link(original_url=link.original_url, short_code=code)
 

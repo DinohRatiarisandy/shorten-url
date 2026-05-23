@@ -7,7 +7,8 @@ class LinkBase(BaseModel):
     original_url: str
 
 
-class LinkCreate(LinkBase): ...
+class LinkCreate(LinkBase):
+    custom_short_code: str | None = None
 
 
 class Link(LinkBase):
