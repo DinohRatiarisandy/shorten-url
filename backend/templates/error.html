@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+	<head>
+		<title>{{ status_code }} - Error</title>
+		<style>
+			body {
+				font-family: sans-serif;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				height: 100vh;
+				margin: 0;
+				background: #f9fafb;
+			}
+			h1 {
+				font-size: 4rem;
+				margin: 0;
+			}
+			p {
+				color: #6b7280;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>🔗 {{ status_code }}</h1>
+		<p>{{ message }}</p>
+	</body>
+</html>
