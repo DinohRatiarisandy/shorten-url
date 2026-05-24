@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 	<head>
-		<title>URL Shortener API</title>
+		<title>Shorten URL API</title>
 		<style>
 			body {
 				font-family: sans-serif;
@@ -24,14 +24,22 @@
 		</style>
 	</head>
 	<body>
-		<h1>URL Shortener API</h1>
+		<h1>Shorten URL API</h1>
 		<p>API is running</p>
 
 		<nav>
 			{% if is_dev %}
-			<a href="{{ doc_url }}">> Swagger UI (dev only)</a><br />
+			<a href="{{ doc_url }}" target="_blank">> Swagger UI (dev only)</a
+			><br />
 			{% endif %}
-			<a href="{{ redoc_url }}">> ReDoc (API documentation)</a>
+			<a href="{{ redoc_url }}" target="_blank"
+				>> ReDoc (API documentation)</a
+			><br />
+			{% if frontend_app_url %}
+			<a href="{{ frontend_app_url }}" target="_blank"
+				>> Visit the application</a
+			>
+			{% endif %}
 		</nav>
 	</body>
 </html>

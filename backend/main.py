@@ -18,6 +18,7 @@ from exceptions.handlers import http_exception_handler, starlette_exception_hand
 dotenv.load_dotenv(override=True)
 
 is_dev = os.getenv("ENV") == "development"
+frontend_app_url = os.getenv("FRONTEND_APP_URL")
 
 templates = Jinja2Templates(directory="templates")
 
@@ -50,6 +51,7 @@ def root(request: Request):
             "is_dev": is_dev,
             "doc_url": "/docs" if is_dev else None,
             "redoc_url": "/redoc",
+            "frontend_app_url": frontend_app_url if frontend_app_url else None,
         },
     )
 
