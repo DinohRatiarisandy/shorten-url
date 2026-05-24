@@ -1,3 +1,6 @@
+import os
+
+import dotenv
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
@@ -8,10 +11,16 @@ import schemas
 from crud import links
 from database import engine, get_db
 
+dotenv.load_dotenv(override=True)
+
+is_dev = os.getenv("ENV") == "development"
+
 # Crée les tables
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(
+    docs_url="/docs" if is_dev else None,
+)
 
 # CORS
 app.add_middleware(
