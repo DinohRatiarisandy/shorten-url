@@ -3,7 +3,9 @@ import os
 import dotenv
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.requests import Request
+from fastapi.responses import RedirectResponse
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -16,6 +18,8 @@ from exceptions.handlers import http_exception_handler, starlette_exception_hand
 dotenv.load_dotenv(override=True)
 
 is_dev = os.getenv("ENV") == "development"
+
+templates = Jinja2Templates(directory="templates")
 
 # Crée les tables
 models.Base.metadata.create_all(bind=engine)
@@ -38,8 +42,16 @@ app.add_exception_handler(StarletteHTTPException, starlette_exception_handler)
 
 
 @app.get("/")
-def root():
-    return HTMLResponse("<h1>Nothing to see here</h1>")
+def root(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="home.html",
+        context={
+            "is_dev": is_dev,
+            "doc_url": "/docs" if is_dev else None,
+            "redoc_url": "/redoc",
+        },
+    )
 
 
 @app.post("/links/", response_model=schemas.Link)
