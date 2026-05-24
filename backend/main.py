@@ -3,13 +3,15 @@ import os
 import dotenv
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 import models
 import schemas
 from crud import links
 from database import engine, get_db
+from exceptions.handlers import http_exception_handler, starlette_exception_handler
 
 dotenv.load_dotenv(override=True)
 
@@ -30,6 +32,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.add_exception_handler(HTTPException, http_exception_handler)
+app.add_exception_handler(StarletteHTTPException, starlette_exception_handler)
+
+
+@app.get("/")
+def root():
+    return HTMLResponse("<h1>Nothing to see here</h1>")
 
 
 @app.post("/links/", response_model=schemas.Link)
