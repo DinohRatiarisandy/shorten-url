@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, nextTick, useTemplateRef } from "vue";
 import { API_URL } from "@/services/linkService";
 
 const showCustomCodeInput = ref(false);
+const customCodeInput = useTemplateRef("customCodeInput");
 
 const props = defineProps<{
 	modelValue: string; // v-model='url'
@@ -26,9 +27,13 @@ function handleInput(event: Event) {
 	emit("change");
 }
 
-function handleCustomCode(event: Event) {
+async function handleCustomCode() {
 	showCustomCodeInput.value = !showCustomCodeInput.value;
-	if (showCustomCodeInput.value === false) {
+
+	if (showCustomCodeInput.value) {
+		await nextTick();
+		customCodeInput.value?.focus();
+	} else {
 		emit("update:customCode", "");
 	}
 }
@@ -56,10 +61,13 @@ function handleCustomCode(event: Event) {
 				v-if="showCustomCodeInput"
 				class="flex items-center rounded-lg px-3 py-2 mb-4"
 			>
-				<span class="text-gray-400 text-sm whitespace-nowrap"
-					>{{ API_URL }}/</span
+				<label
+					for="custom-code-input"
+					class="text-gray-400 text-sm whitespace-nowrap"
+					>{{ API_URL }}/</label
 				>
 				<input
+					ref="customCodeInput"
 					:value="props.customCode"
 					@input="
 						emit(
@@ -70,7 +78,7 @@ function handleCustomCode(event: Event) {
 					type="text"
 					placeholder="custom-alias"
 					class="outline-none text-sm flex-1 min-w-0"
-					id="customCode"
+					id="custom-code-input"
 					maxlength="15"
 				/>
 			</div>
