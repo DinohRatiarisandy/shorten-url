@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+	<head>
+		<title>URL Shortener API</title>
+		<style>
+			body {
+				font-family: sans-serif;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				height: 100vh;
+				margin: 0;
+				background: #f9fafb;
+			}
+			a {
+				color: #3b82f6;
+				text-decoration: none;
+				margin: 4px 0;
+			}
+			a:hover {
+				text-decoration: underline;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>URL Shortener API</h1>
+		<p>API is running</p>
+
+		<nav>
+			{% if is_dev %}
+			<a href="{{ doc_url }}">> Swagger UI (dev only)</a><br />
+			{% endif %}
+			<a href="{{ redoc_url }}">> ReDoc (API documentation)</a>
+		</nav>
+	</body>
+</html>
