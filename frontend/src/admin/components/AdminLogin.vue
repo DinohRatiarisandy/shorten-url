@@ -20,7 +20,7 @@ const handleLogin = async () => {
 	try {
 		await loginAdmin(email.value, password.value);
 
-		router.push("/");
+		router.push("/admin/dashboard");
 	} catch (error) {
 		if (error instanceof Error) {
 			errorMessage.value = error.message;
