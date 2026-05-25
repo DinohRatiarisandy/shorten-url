@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+from models import UserRole
+
 
 class LinkBase(BaseModel):
     original_url: str
@@ -19,3 +21,32 @@ class Link(LinkBase):
     class Config:
         from_attributes = True
         json_encoders = {datetime: lambda dt: dt.isoformat()}
+
+
+class UserCreate(BaseModel):
+    email: str
+    password: str
+
+
+class UserInDB(BaseModel):
+    id: str
+    email: str
+    hashed_password: str
+    role: UserRole
+
+    class Config:
+        from_attributes = True
+
+
+class UserResponse(BaseModel):
+    id: str
+    email: str
+    role: UserRole
+
+    class Config:
+        from_attributes = True
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
