@@ -29,3 +29,23 @@ def get_link_by_id(
         return selected_link
 
     raise HTTPException(status_code=404, detail="Link not found")
+
+
+@router.get(
+    "/admin/links/code/{short_code}",
+    response_model=schemas.LinkResponse,
+    description="Get link by his short code",
+)
+def get_link_by_short_code(
+    short_code: str,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_admin_user),
+):
+    selected_link = (
+        db.query(models.Link).filter(models.Link.short_code == short_code).first()
+    )
+
+    if selected_link:
+        return selected_link
+
+    raise HTTPException(status_code=404, detail="Short code not found")
