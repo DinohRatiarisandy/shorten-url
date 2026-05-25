@@ -15,6 +15,7 @@ from auth.security import create_access_token, verify_password
 from crud import links
 from database import engine, get_db
 from exceptions.handlers import http_exception_handler, starlette_exception_handler
+from routers import admin
 
 dotenv.load_dotenv(override=True)
 
@@ -41,6 +42,8 @@ app.add_middleware(
 
 app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(StarletteHTTPException, starlette_exception_handler)
+
+app.include_router(admin.router)
 
 
 @app.post("/auth/login")
