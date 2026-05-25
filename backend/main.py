@@ -11,7 +11,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 import models
 import schemas
-from auth.security import verify_password
+from auth.security import create_access_token, verify_password
 from crud import links
 from database import engine, get_db
 from exceptions.handlers import http_exception_handler, starlette_exception_handler
@@ -55,9 +55,10 @@ def login(request: schemas.LoginRequest, db: Session = Depends(get_db)):
     if not verify_password(request.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    return {
-        "message": "admin connected",
-    }
+    # Token
+    token = create_access_token(data={"sub": str(user.id), "role": str(user.role)})
+
+    return {"access_token": token, "token_type": "bearer"}
 
 
 @app.get("/")
