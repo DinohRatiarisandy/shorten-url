@@ -11,6 +11,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 import models
 import schemas
+from auth.security import verify_password
 from crud import links
 from database import engine, get_db
 from exceptions.handlers import http_exception_handler, starlette_exception_handler
@@ -40,6 +41,23 @@ app.add_middleware(
 
 app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(StarletteHTTPException, starlette_exception_handler)
+
+
+@app.post("/auth/login")
+def login(request: schemas.LoginRequest, db: Session = Depends(get_db)):
+    # Chercher user
+    user = db.query(models.User).filter(models.User.email == request.email).first()
+
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    # Vérifier password
+    if not verify_password(request.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    return {
+        "message": "admin connected",
+    }
 
 
 @app.get("/")
