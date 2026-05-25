@@ -28,6 +28,16 @@ class UserCreate(BaseModel):
     password: str
 
 
+class LinkResponse(BaseModel):
+    id: int
+    original_url: str
+    short_code: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class UserInDB(BaseModel):
     id: str
     email: str
