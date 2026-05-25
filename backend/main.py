@@ -13,7 +13,7 @@ import schemas
 from auth.security import create_access_token, verify_password
 from crud import links
 from database import engine, get_db
-from routers import admin
+from routers import admin, auth
 
 dotenv.load_dotenv(override=True)
 
@@ -40,6 +40,7 @@ app.add_middleware(
 
 
 app.include_router(admin.router)
+app.include_router(auth.router)
 
 
 @app.post("/auth/login")
