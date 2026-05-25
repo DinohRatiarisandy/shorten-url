@@ -24,11 +24,13 @@ const handleLogin = async () => {
 	} catch (error) {
 		if (error instanceof Error) {
 			errorMessage.value = error.message;
+		} else if (typeof error === "string") {
+			errorMessage.value = error;
+		} else if (error && typeof error === "object" && "message" in error) {
+			errorMessage.value = String(error.message);
 		} else {
 			errorMessage.value = "Something went wrong";
 		}
-	} finally {
-		loading.value = false;
 	}
 };
 </script>
