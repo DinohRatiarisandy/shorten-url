@@ -4,6 +4,7 @@ from datetime import UTC, datetime, timedelta
 import bcrypt
 import dotenv
 import jwt
+from fastapi import HTTPException, status
 
 dotenv.load_dotenv(override=True)
 
@@ -30,3 +31,19 @@ def create_access_token(data: dict):
     to_encode.update({"exp": expire})
 
     return jwt.encode(payload=to_encode, key=SECRET_KEY, algorithm=ALGORITHM)
+
+
+def decode_access_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
+        return payload
+
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired"
+        )
+
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
+        )
