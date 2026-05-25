@@ -24,17 +24,17 @@ const router = createRouter({
 	routes,
 });
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to) => {
 	if (to.meta.requiresAuth) {
 		try {
 			await getMe();
-			next();
+			return true;
 		} catch {
-			next("/admin/login");
+			return "/admin/login";
 		}
-	} else {
-		next();
 	}
+
+	return true;
 });
 
 export default router;
