@@ -1,5 +1,5 @@
-from fastapi import Depends, HTTPException
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi import Cookie, Depends, HTTPException
+from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
 
 import models
@@ -10,12 +10,13 @@ security = HTTPBearer()
 
 
 def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
+    access_token: str = Cookie(None),
     db: Session = Depends(get_db),
 ):
-    token = credentials.credentials
+    if not access_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
 
-    payload = decode_access_token(token)
+    payload = decode_access_token(access_token)
 
     user_id = payload.get("sub")
 

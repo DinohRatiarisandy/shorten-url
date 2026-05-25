@@ -1,7 +1,7 @@
 import os
 
 import dotenv
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.requests import Request
 from fastapi.responses import RedirectResponse
@@ -47,7 +47,9 @@ app.include_router(admin.router)
 
 
 @app.post("/auth/login")
-def login(request: schemas.LoginRequest, db: Session = Depends(get_db)):
+def login(
+    request: schemas.LoginRequest, response: Response, db: Session = Depends(get_db)
+):
     # Chercher user
     user = db.query(models.User).filter(models.User.email == request.email).first()
 
@@ -61,7 +63,15 @@ def login(request: schemas.LoginRequest, db: Session = Depends(get_db)):
     # Token
     token = create_access_token(data={"sub": str(user.id), "role": str(user.role)})
 
-    return {"access_token": token, "token_type": "bearer"}
+    # Cookie
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        samesite="lax",
+        secure=False if is_dev else True,
+    )
+    return {"message": "login success"}
 
 
 @app.get("/")
