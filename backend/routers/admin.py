@@ -1,0 +1,66 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+import models
+import schemas
+from auth.dependencies import get_current_admin_user
+from database import get_db
+
+router = APIRouter(tags=["Admin"])
+
+
+@router.get("/admin/links", response_model=list[schemas.LinkResponse])
+def get_links(db: Session = Depends(get_db), user=Depends(get_current_admin_user)):
+    all_links = db.query(models.Link).all()
+    return all_links
+
+
+@router.get(
+    "/admin/links/id/{id}",
+    response_model=schemas.LinkResponse,
+    description="Get link by his id",
+)
+def get_link_by_id(
+    id: str, db: Session = Depends(get_db), user=Depends(get_current_admin_user)
+):
+    selected_link = db.query(models.Link).filter(models.Link.id == id).first()
+
+    if selected_link:
+        return selected_link
+
+    raise HTTPException(status_code=404, detail="Link not found")
+
+
+@router.get(
+    "/admin/links/code/{short_code}",
+    response_model=schemas.LinkResponse,
+    description="Get link by his short code",
+)
+def get_link_by_short_code(
+    short_code: str,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_admin_user),
+):
+    selected_link = (
+        db.query(models.Link).filter(models.Link.short_code == short_code).first()
+    )
+
+    if selected_link:
+        return selected_link
+
+    raise HTTPException(status_code=404, detail="Short code not found")
+
+
+@router.delete("/admin/links/{id}", description="Delete a link by id")
+def delete_link_by_id(
+    id: str, db: Session = Depends(get_db), user=Depends(get_current_admin_user)
+):
+    selected_link = db.query(models.Link).filter(models.Link.id == id).first()
+
+    if not selected_link:
+        return HTTPException(status_code=404, detail="Link not found")
+
+    db.delete(selected_link)
+    db.commit()
+
+    return {"message": "Link deleted successfully !"}

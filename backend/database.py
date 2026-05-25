@@ -7,15 +7,15 @@ from sqlalchemy.orm import sessionmaker
 
 dotenv.load_dotenv(override=True)
 
-POSTGRES_DATABASE_URL = os.getenv("POSTGRES_DATABASE_URL")
-SQLITE3_DATABASE_URL = "sqlite:///./shorten_url.db"
+DATABASE_URL = os.getenv("DATABASE_URL")
+SQLITE3_URL = "sqlite:///./shorten_url.db"
 
-if not POSTGRES_DATABASE_URL:
-    engine = create_engine(
-        SQLITE3_DATABASE_URL, connect_args={"check_same_thread": False}
-    )
-else:
-    engine = create_engine(POSTGRES_DATABASE_URL)
+URL = DATABASE_URL or SQLITE3_URL
+
+if URL.startswith("sqlite"):
+    connect_args = {"check_same_thread": False}
+
+engine = create_engine(URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
