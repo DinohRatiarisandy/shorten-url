@@ -34,6 +34,7 @@ function onInputChange() {
 
 <template>
 	<router-view />
+	<router-link to="/admin/login"> Admin </router-link>
 	<div class="min-h-screen flex items-center justify-center bg-gray-50">
 		<div class="w-105 p-6 shadow-xl rounded-2xl bg-white">
 			<!-- Title -->
