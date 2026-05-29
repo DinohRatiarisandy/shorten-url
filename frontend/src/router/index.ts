@@ -1,8 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { getMe } from "@/admin/services/auth";
 
-console.log("BASE URL:", import.meta.env.BASE_URL)
-
 const routes = [
 	{
 		path: "/",
