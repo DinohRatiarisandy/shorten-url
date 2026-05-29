@@ -67,7 +67,7 @@ def login(
         key="access_token",
         value=token,
         httponly=True,
-        samesite="lax",
+        samesite="none",
         secure=False if is_dev else True,
     )
 
