@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import type { Link } from "@/types/link";
-import { getAdminLinks } from "@/admin/services/admin.api.ts";
+import { getAdminLinks, deleteAdminLink } from "@/admin/services/admin.api.ts";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -18,6 +18,16 @@ async function fetchLinks() {
         error.value = err instanceof Error ? err.message : "unknown error";
     } finally {
         loading.value = false;
+    }
+}
+
+async function deleteLink(id: number) {
+    try {
+        await deleteAdminLink(id);
+
+        links.value = links.value.filter((l) => l.id !== id);
+    } catch (err) {
+        error.value = err instanceof Error ? err.message : "delete failed";
     }
 }
 
@@ -68,6 +78,7 @@ onMounted(fetchLinks);
                     <td class="px-6 py-4">{{ link.created_at }}</td>
                     <td>
                         <button
+                            @click="deleteLink(link.id)"
                             class="flex items-center gap-1 px-3 py-1 text-sm text-white bg-red-500 rounded hover:bg-red-600 transition"
                         >
                             <span>Delete</span>

@@ -40,3 +40,16 @@ export async function getAdminLinks(): Promise<Link[]> {
 
     return data;
 }
+
+export async function deleteAdminLink(id: number) {
+    const response = await apiFetch(`/admin/links/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        throw new Error(data.detail || "Failed to delete link");
+    }
+}
