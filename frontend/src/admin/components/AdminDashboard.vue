@@ -1,9 +1,15 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import type { Link } from "@/types/link";
-import { getAdminLinks, deleteAdminLink } from "@/admin/services/admin.api.ts";
+import {
+    getAdminLinks,
+    deleteAdminLink,
+    logoutAdmin,
+} from "@/admin/services/admin.api.ts";
+import { useRouter } from "vue-router";
 
 const API_URL = import.meta.env.VITE_API_URL;
+const router = useRouter();
 
 const links = ref<Link[]>([]);
 const loading = ref(false);
@@ -31,9 +37,25 @@ async function deleteLink(id: number) {
     }
 }
 
+async function logout() {
+    try {
+        await logoutAdmin();
+        localStorage.clear();
+        router.push("/admin/login");
+    } catch (err) {
+        error.value = err instanceof Error ? err.message : "Error when logout";
+    }
+}
+
 onMounted(fetchLinks);
 </script>
 <template>
+    <button
+        @click="logout"
+        class="mx-2 my-2 px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700"
+    >
+        Logout
+    </button>
     <div
         class="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-base border border-default"
     >

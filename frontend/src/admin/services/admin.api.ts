@@ -53,3 +53,16 @@ export async function deleteAdminLink(id: number) {
         throw new Error(data.detail || "Failed to delete link");
     }
 }
+
+export async function logoutAdmin() {
+    const response = await apiFetch("/auth/logout", {
+        method: "POST",
+        credentials: "include",
+    });
+
+    if (!response.ok) {
+        throw new Error("Logout failed");
+    }
+
+    return await response.json();
+}

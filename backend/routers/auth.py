@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Cookie, Depends, HTTPException
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 
 import models
@@ -25,3 +25,10 @@ def get_me(access_token: str = Cookie(None), db: Session = Depends(get_db)):
         "email": user.email,
         "role": user.role,
     }
+
+
+# logout
+@router.post("/auth/logout")
+def logout(response: Response):
+    response.delete_cookie(key="acces_token", path="/")
+    return {"message": "Logged out"}
