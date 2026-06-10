@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import type { Link } from "@/types/link";
+import { getAdminLinks } from "@/admin/services/admin.api.ts";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -11,18 +12,8 @@ const error = ref("");
 async function fetchLinks() {
     try {
         loading.value = true;
-
-        const response = await fetch(`${API_URL}/admin/links`, {
-            credentials: "include",
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.detail);
-        }
-
-        links.value = data;
+        error.value = ref("");
+        links.value = await getAdminLinks();
     } catch (err) {
         error.value = err instanceof Error ? err.message : "unknown error";
     } finally {
