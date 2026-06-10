@@ -68,7 +68,7 @@ def login(
         value=token,
         httponly=True,
         samesite="none",
-        secure=False if is_dev else True,
+        secure=True,
     )
 
     return response
