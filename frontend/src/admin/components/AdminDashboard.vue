@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
-import type { Link } from "@/types/link";
+import type { Link } from "@/types/links";
 import {
     getAdminLinks,
     deleteAdminLink,
@@ -18,7 +18,7 @@ const error = ref("");
 async function fetchLinks() {
     try {
         loading.value = true;
-        error.value = ref("");
+        error.value = "";
         links.value = await getAdminLinks();
     } catch (err) {
         error.value = err instanceof Error ? err.message : "unknown error";
@@ -31,7 +31,7 @@ async function deleteLink(id: number) {
     try {
         await deleteAdminLink(id);
 
-        links.value = links.value.filter((l) => l.id !== id);
+        links.value = links.value.filter((link) => link.id !== id);
     } catch (err) {
         error.value = err instanceof Error ? err.message : "delete failed";
     }
